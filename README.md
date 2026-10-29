@@ -100,7 +100,7 @@ L’IA/bot n’est pas encore implémentée. Les fournisseurs OAuth, les URL de 
 Depuis `backend/` :
 
 ```powershell
-pytest
+pytest --cov=veylith --cov-report=term-missing
 ruff check .
 ruff format --check .
 mypy src

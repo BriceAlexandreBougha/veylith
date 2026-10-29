@@ -81,7 +81,7 @@ Applique les fichiers de `supabase/migration/` au projet Supabase voulu, une seu
 Depuis `backend/` :
 
 ```powershell
-pytest
+pytest --cov=veylith --cov-report=term-missing
 ruff check .
 ruff format --check .
 mypy src

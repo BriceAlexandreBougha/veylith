@@ -71,4 +71,4 @@ npm test
 npm run build
 ```
 
-Les tests frontend utilisent le runner intégré de Node.js 24 pour couvrir les déplacements locaux, les portées d’attaque, les calculs de combat et la simulation d’actions d’analyse. Les tests des règles autoritaires, de la persistance et des routes API sont dans `backend/tests/`.
+Les tests frontend utilisent le runner intégré de Node.js 24 pour couvrir les déplacements locaux, les portées d’attaque, les calculs de combat et la simulation d’actions d’analyse. `npm test` affiche aussi le rapport de couverture V8. Les tests des règles autoritaires, de la persistance et des routes API sont dans `backend/tests/`.

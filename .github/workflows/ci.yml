@@ -47,7 +47,7 @@ jobs:
         run: ruff format --check .
 
       - name: Backend unit, integration and API tests
-        run: pytest -q
+        run: pytest --cov=veylith --cov-report=term-missing --cov-report=xml:coverage.xml -q
 
       # mypy currently reports pre-existing type errors in the backend; keep it
       # visible in CI without making the test/build gate permanently fail.
@@ -83,7 +83,7 @@ jobs:
         run: npm run build
 
   docker:
-    name: Build Docker images
+    name: Docker build and smoke test
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs:
@@ -93,14 +93,30 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Build backend image
-        run: docker build --tag veylith-backend:ci ./backend
-
-      - name: Build frontend image
+      - name: Create CI-only Supabase placeholders
         run: |
-          docker build \
-            --build-arg VITE_SUPABASE_URL=https://ci-placeholder.supabase.co \
-            --build-arg VITE_SUPABASE_ANON_KEY=ci-public-placeholder \
-            --build-arg VITE_API_URL=/ \
-            --tag veylith-frontend:ci \
-            ./frontend
+          printf '%s\n' \
+            'VITE_SUPABASE_URL=https://ci-placeholder.supabase.co' \
+            'VITE_SUPABASE_ANON_KEY=ci-public-placeholder' \
+            'FRONTEND_PORT=8080' \
+            'BACKEND_PORT=8000' > .env
+          printf '%s\n' \
+            'SUPABASE_URL=https://ci-placeholder.supabase.co' \
+            'SUPABASE_ANON_KEY=ci-public-placeholder' \
+            'SUPABASE_SERVICE_ROLE_KEY=ci-secret-placeholder' > backend/.env
+
+      - name: Build and start Compose services, then check HTTP endpoints
+        run: |
+          trap 'docker compose down --remove-orphans' EXIT
+          docker compose up --build -d
+
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8000/api/health >/tmp/veylith-api-health \
+              && curl --fail --silent http://127.0.0.1:8080/ >/tmp/veylith-frontend-index; then
+              break
+            fi
+            sleep 2
+          done
+
+          grep -q '"status":"ok"' /tmp/veylith-api-health
+          grep -q 'id="root"' /tmp/veylith-frontend-index
