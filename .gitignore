@@ -1,0 +1,23 @@
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+*.local
+
+# Python environments, bytecode, and caches
+.venv/
+**/.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Frontend dependencies and generated output
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.vite/
+**/.vite/

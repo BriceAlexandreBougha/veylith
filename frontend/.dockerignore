@@ -1,0 +1,10 @@
+.env
+.env.*
+.git
+node_modules
+dist
+.vite
+*.local
+.ruff_cache
+coverage
+*.tsbuildinfo

@@ -1,0 +1,17 @@
+# Environnement Python
+.venv/
+
+# Environnement
+.env
+
+# Métadonnées générées
+*.egg-info/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+
+# Outils de test et de qualité
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
