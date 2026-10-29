@@ -67,7 +67,8 @@ L’inscription, connexion, déconnexion, récupération de session et OAuth son
 ## Vérification disponible
 
 ```powershell
+npm test
 npm run build
 ```
 
-Il n’y a actuellement pas de script `test` défini dans `package.json`. Les tests des règles serveur et de l’API sont dans `backend/tests/`.
+Les tests frontend utilisent le runner intégré de Node.js 24 pour couvrir les déplacements locaux, les portées d’attaque, les calculs de combat et la simulation d’actions d’analyse. Les tests des règles autoritaires, de la persistance et des routes API sont dans `backend/tests/`.

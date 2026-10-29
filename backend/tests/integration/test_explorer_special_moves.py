@@ -86,7 +86,7 @@ def test_non_explorer_cannot_use_special_move(game):
         game.move_piece("vanguard", Position(3, 3), special="diagonal")
 
 
-def test_explorer_cannot_move_diagonally_without_special(game):
+def test_explorer_cannot_submit_a_direct_diagonal_as_a_normal_path(game):
     add_piece(
         game,
         "explorer",
@@ -96,7 +96,7 @@ def test_explorer_cannot_move_diagonally_without_special(game):
     )
 
     with pytest.raises(ValueError):
-        game.move_piece("explorer", Position(3, 3))
+        game.move_along_path("explorer", [Position(3, 3)])
 
 
 def test_explorer_special_move_uses_all_remaining_movement(game):

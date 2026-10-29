@@ -1,3 +1,12 @@
+def test_health_endpoint_is_public_and_reports_ok(client):
+    client.app.dependency_overrides.clear()
+
+    response = client.get("/api/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
 def test_create_game_returns_initial_state(client):
     response = client.post("/api/games")
 

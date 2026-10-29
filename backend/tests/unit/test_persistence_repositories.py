@@ -10,6 +10,7 @@ from veylith.persistence.games import (
     GameAccessError,
     GameConflictError,
     GameNotFoundError,
+    GamePersistenceError,
 )
 from veylith.persistence.social import SocialPersistenceError
 
@@ -208,6 +209,65 @@ def test_friend_request_duplicate_maps_to_conflict(monkeypatch):
     assert error.value.status_code == 409
 
 
+def test_game_action_history_returns_rows_in_chronological_order(monkeypatch):
+    expected = [
+        {"action_number": 1, "action_type": "move", "payload": {"n": 1}},
+        {"action_number": 2, "action_type": "end_turn", "payload": {}},
+    ]
+
+    class ActionQuery:
+        def __init__(self):
+            self.operations = []
+
+        def select(self, columns):
+            self.operations.append(("select", columns))
+            return self
+
+        def eq(self, key, value):
+            self.operations.append(("eq", key, value))
+            return self
+
+        def order(self, key):
+            self.operations.append(("order", key))
+            return self
+
+        def execute(self):
+            return SimpleNamespace(data=expected)
+
+    query = ActionQuery()
+    client = SimpleNamespace(table=lambda name: query)
+    monkeypatch.setattr(games, "get_supabase_admin_client", lambda: client)
+
+    assert games.list_game_actions("game-id") == expected
+    assert ("eq", "game_id", "game-id") in query.operations
+    assert ("order", "action_number") in query.operations
+
+
+@pytest.mark.parametrize("result", [None, {"action_number": 1}])
+def test_game_action_history_rejects_invalid_database_payload(monkeypatch, result):
+    class Query:
+        def select(self, _columns):
+            return self
+
+        def eq(self, _key, _value):
+            return self
+
+        def order(self, _key):
+            return self
+
+        def execute(self):
+            return SimpleNamespace(data=result)
+
+    monkeypatch.setattr(
+        games,
+        "get_supabase_admin_client",
+        lambda: SimpleNamespace(table=lambda _name: Query()),
+    )
+
+    with pytest.raises(GamePersistenceError, match="historique"):
+        games.list_game_actions("game-id")
+
+
 class FakeQuery:
     def __init__(self, result):
         self.result = result
@@ -251,6 +311,9 @@ class FakeListQuery:
         return self
 
     def order(self, _key, desc=False):
+        return self
+
+    def range(self, _start, _end):
         return self
 
     def execute(self):

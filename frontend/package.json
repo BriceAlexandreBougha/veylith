@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "node --experimental-strip-types --import ./tests/register-ts-loader.mjs --test",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },

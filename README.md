@@ -109,10 +109,11 @@ mypy src
 Depuis `frontend/` :
 
 ```powershell
+npm test
 npm run build
 ```
 
-Le build frontend exécute TypeScript (`tsc -b`) puis Vite. Les tests backend sont répartis entre `tests/unit/`, `tests/integration/` et `tests/api/`.
+Les tests frontend couvrent les déplacements locaux, combats et simulations d’analyse. Le build exécute TypeScript (`tsc -b`) puis Vite. Les tests backend sont répartis entre `tests/unit/`, `tests/integration/` et `tests/api/`.
 
 ## Migrations Supabase
 
